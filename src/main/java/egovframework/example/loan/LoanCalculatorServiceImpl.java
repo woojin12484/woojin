@@ -94,7 +94,7 @@ public class LoanCalculatorServiceImpl implements LoanCalculatorService {
             // 마지막 달 보정 (잔액을 모두 털어내기 위함)
             if (i == termMonths) {
                 principalPayment = currentBalance; // 원금은 남은 잔액 전액
-                monthlyPayment = principalPayment - interestPayment; // 월 납입금 재조정
+                monthlyPayment = principalPayment + interestPayment; // 월 납입금 재조정
             }
             
             currentBalance -= principalPayment; // 잔액 차감
