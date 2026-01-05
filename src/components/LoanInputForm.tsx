@@ -73,7 +73,7 @@ export function LoanInputForm({ onCalculate }: LoanInputFormProps) {
         <Card className="w-full border-t-0 shadow-2xl shadow-black/5 dark:shadow-white/5">
             <CardHeader className="pb-8">
                 <CardTitle className="text-2xl font-bold tracking-tight text-teal-700 dark:text-teal-400">
-                    신한캐피탈
+                    우진캐피탈
                 </CardTitle>
                 <p className="text-slate-500 text-[15px]">대출 조건을 입력하여 상환 스케줄을 확인하세요.</p>
             </CardHeader>
