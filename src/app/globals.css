@@ -1,0 +1,157 @@
+@import "tailwindcss";
+
+@theme {
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", sans-serif;
+}
+
+@layer base {
+  :root {
+    /* Warm Stone/Orange Palette (Light) */
+    --background: 40 20% 97%;
+    /* Stone-50 warm off-white */
+    --foreground: 24 10% 10%;
+    /* Warm Dark Gray */
+
+    --card: 0 0% 100%;
+    --card-foreground: 24 10% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 24 10% 10%;
+
+    --primary: 25 95% 53%;
+    /* Warm Orange */
+    --primary-foreground: 60 9% 98%;
+
+    --secondary: 40 13% 91%;
+    /* Stone-200 */
+    --secondary-foreground: 24 10% 10%;
+
+    --muted: 40 13% 91%;
+    --muted-foreground: 25 5% 45%;
+
+    --accent: 40 13% 91%;
+    --accent-foreground: 24 10% 10%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 40 10% 88%;
+    --input: 40 10% 88%;
+    --ring: 25 95% 53%;
+    /* Primary Orange Ring */
+
+    --radius: 1rem;
+  }
+
+  .dark {
+    /* Warm Stone/Orange Palette (Dark) */
+    --background: 24 10% 10%;
+    /* Very dark warm gray */
+    --foreground: 40 20% 97%;
+
+    --card: 24 9% 14%;
+    /* Dark warm card */
+    --card-foreground: 40 20% 97%;
+
+    --popover: 24 9% 14%;
+    --popover-foreground: 40 20% 97%;
+
+    --primary: 25 95% 53%;
+    --primary-foreground: 60 9% 98%;
+
+    --secondary: 24 5% 18%;
+    --secondary-foreground: 40 20% 97%;
+
+    --muted: 24 5% 18%;
+    --muted-foreground: 25 5% 65%;
+
+    --accent: 24 5% 18%;
+    --accent-foreground: 40 20% 97%;
+
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 24 5% 18%;
+    --input: 24 5% 18%;
+    --ring: 25 95% 53%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground tracking-tight antialiased font-sans;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Apple-style thin scrollbar for webkit */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+  }
+
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .scrollbar-thin:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+
+  .dark .scrollbar-thin:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+}
