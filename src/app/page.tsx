@@ -19,7 +19,7 @@ export default function Home() {
 
         <header className="mb-16 md:mb-24 fade-in-up">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-slate-800 dark:text-emerald-50 mb-4">
-            Shinhan Capital
+            woojin Capital
           </h1>
           <p className="text-xl md:text-2xl text-slate-500 dark:text-slate-400 font-normal tracking-tight max-w-2xl">
             가장 합리적인 자동차 금융 계획을 세워보세요.<br />
