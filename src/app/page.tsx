@@ -6,8 +6,7 @@ import { ScheduleTable } from "@/components/ScheduleTable";
 import { ScheduleList } from "@/components/ScheduleList";
 import { calculateEqualPrincipalAndInterest, LoanInput, LoanSummary } from "@/lib/calculators";
 import { LoanSchedule } from "@/lib/types";
-import { LoanSchedule } from "@/lib/types";
-import { getSchedules, saveSchedule, deleteSchedule, approveSchedule } from "@/lib/actions";
+import { getSchedules, saveSchedule, deleteSchedule, approveSchedule, getSchedule } from "@/lib/actions";
 import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -21,7 +20,7 @@ export default function Home() {
       // @ts-ignore - mismatch in Prisma types vs LoanSchedule interface locally defined (string vs FuelType)
       const data = await getSchedules();
 
-      const mapped: LoanSchedule[] = data.map(item => ({
+      const mapped: LoanSchedule[] = data.map((item: any) => ({
         ...item,
         fuelType: item.fuelType as any,
         createdAt: item.createdAt.toISOString()
