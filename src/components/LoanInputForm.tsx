@@ -7,12 +7,15 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { LoanInput, FuelType } from "@/lib/calculators";
 import { formatCurrency } from "@/lib/utils";
+import { Save } from "lucide-react";
 
 interface LoanInputFormProps {
     onCalculate: (data: LoanInput) => void;
+    onSave?: (data: LoanInput) => void;
+    initialData?: LoanInput | null;
 }
 
-export function LoanInputForm({ onCalculate }: LoanInputFormProps) {
+export function LoanInputForm({ onCalculate, onSave, initialData }: LoanInputFormProps) {
     const [vehiclePrice, setVehiclePrice] = useState<string>("");
     const [downPayment, setDownPayment] = useState<string>("");
     const [displacement, setDisplacement] = useState<string>(""); // cc
@@ -54,9 +57,22 @@ export function LoanInputForm({ onCalculate }: LoanInputFormProps) {
         }
     }, [fuelType]);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onCalculate({
+
+    useEffect(() => {
+        if (initialData) {
+            setVehiclePrice(formatNumber(String(initialData.vehiclePrice || 0)));
+            setDownPayment(formatNumber(String(initialData.downPayment || 0)));
+            setDisplacement(formatNumber(String(initialData.engineDisplacement || 0)));
+            setFuelType(initialData.fuelType || 'gasoline');
+            setEnvCharge(formatNumber(String(initialData.envChargeSemiAnnual || 0)));
+            setRate(String(initialData.interestRate || 0));
+            setMonths(String(initialData.termMonths || 36));
+            setDate(initialData.startDate instanceof Date ? initialData.startDate.toISOString().split('T')[0] : new Date(initialData.startDate).toISOString().split('T')[0]);
+        }
+    }, [initialData]);
+
+    const getFormData = (): LoanInput => {
+        return {
             vehiclePrice: parseNumber(vehiclePrice),
             downPayment: parseNumber(downPayment),
             engineDisplacement: parseNumber(displacement),
@@ -66,7 +82,18 @@ export function LoanInputForm({ onCalculate }: LoanInputFormProps) {
             interestRate: Number(rate),
             termMonths: Number(months),
             startDate: new Date(date),
-        });
+        };
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onCalculate(getFormData());
+    };
+
+    const handleSave = () => {
+        if (onSave) {
+            onSave(getFormData());
+        }
     };
 
     return (
@@ -225,9 +252,21 @@ export function LoanInputForm({ onCalculate }: LoanInputFormProps) {
 
                 </CardContent>
                 <CardFooter className="pt-0 pb-8 px-8">
-                    <Button type="submit" size="lg" className="w-full h-14 text-lg font-semibold shadow-orange-500/20 shadow-xl hover:shadow-orange-500/30 rounded-2xl bg-orange-600 hover:bg-orange-700 text-white">
-                        상환 스케줄 계산하기
-                    </Button>
+                    <div className="flex gap-4">
+                        <Button type="submit" size="lg" className="flex-1 h-14 text-lg font-semibold shadow-orange-500/20 shadow-xl hover:shadow-orange-500/30 rounded-2xl bg-orange-600 hover:bg-orange-700 text-white">
+                            상환 스케줄 계산하기
+                        </Button>
+                        <Button
+                            type="button"
+                            size="lg"
+                            variant="outline"
+                            className="h-14 px-8 text-lg font-semibold rounded-2xl border-2 border-slate-200 hover:bg-slate-50 text-slate-600 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                            onClick={handleSave}
+                        >
+                            <Save className="w-5 h-5 mr-2" />
+                            저장
+                        </Button>
+                    </div>
                 </CardFooter>
             </form>
         </Card>

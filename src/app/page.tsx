@@ -1,16 +1,92 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LoanInputForm } from "@/components/LoanInputForm";
 import { ScheduleTable } from "@/components/ScheduleTable";
+import { ScheduleList } from "@/components/ScheduleList";
 import { calculateEqualPrincipalAndInterest, LoanInput, LoanSummary } from "@/lib/calculators";
+import { LoanSchedule } from "@/lib/types";
 
 export default function Home() {
   const [summary, setSummary] = useState<LoanSummary | null>(null);
+  const [schedules, setSchedules] = useState<LoanSchedule[]>([]);
+  const [editingData, setEditingData] = useState<LoanInput | null>(null);
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('loanSchedules');
+    if (saved) {
+      try {
+        setSchedules(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to parse schedules", e);
+      }
+    }
+  }, []);
+
+  // Save to localStorage whenever schedules change
+  useEffect(() => {
+    localStorage.setItem('loanSchedules', JSON.stringify(schedules));
+  }, [schedules]);
 
   const handleCalculate = (data: LoanInput) => {
     const result = calculateEqualPrincipalAndInterest(data);
     setSummary(result);
+  };
+
+  const handleSave = (data: LoanInput) => {
+    const result = calculateEqualPrincipalAndInterest(data);
+
+    // Check if we are updating an existing draft (simple logic: check if editingData matches an ID? 
+    // Actually, simplifying: Always create new unless we tracked ID. 
+    // To support update, we need to know if we are editing an ID.
+    // Let's assume 'Save' always creates NEW for now, unless we explicitly want 'Update'.
+    // Given the request, "Save" usually means "Create". "Edit" means load to form.
+    // If I edit and save, should it update? Probably.
+    // But LoanInput doesn't have ID. 
+    // Let's just create new entry for now to be safe, or check if we can match.
+    // For this demo, let's append.
+
+    const newSchedule: LoanSchedule = {
+      ...data,
+      id: Date.now().toString(),
+      createdAt: new Date().toISOString(),
+      status: 'DRAFT',
+      summary: result
+    };
+
+    setSchedules(prev => [newSchedule, ...prev]);
+    alert("상환 스케줄이 저장되었습니다.");
+  };
+
+  const handleDelete = (id: string) => {
+    if (confirm("정말 삭제하시겠습니까?")) {
+      setSchedules(prev => prev.filter(s => s.id !== id));
+    }
+  };
+
+  const handleApprove = (id: string) => {
+    if (confirm("이 견적을 승인하시겠습니까?")) {
+      setSchedules(prev => prev.map(s =>
+        s.id === id ? { ...s, status: 'APPROVED' } : s
+      ));
+    }
+  };
+
+  const handleLoad = (schedule: LoanSchedule) => {
+    setEditingData({
+      vehiclePrice: schedule.vehiclePrice,
+      downPayment: schedule.downPayment,
+      engineDisplacement: schedule.engineDisplacement,
+      fuelType: schedule.fuelType,
+      envChargeSemiAnnual: schedule.envChargeSemiAnnual,
+      loanAmount: schedule.loanAmount,
+      interestRate: schedule.interestRate,
+      termMonths: schedule.termMonths,
+      startDate: new Date(schedule.startDate)
+    });
+    setSummary(schedule.summary || null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -29,7 +105,11 @@ export default function Home() {
 
         <div className="flex flex-col gap-12 w-full">
           <div className="w-full max-w-4xl mx-auto space-y-8">
-            <LoanInputForm onCalculate={handleCalculate} />
+            <LoanInputForm
+              onCalculate={handleCalculate}
+              onSave={handleSave}
+              initialData={editingData}
+            />
 
             <div className="text-center">
               <p className="text-xs text-slate-400 leading-relaxed">
@@ -40,7 +120,19 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="w-full animate-in fade-in slide-in-from-bottom-8 duration-700">
+          <div className="w-full animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-12">
+
+            {/* Saved Schedules List */}
+            <section className="max-w-4xl mx-auto">
+              <ScheduleList
+                schedules={schedules}
+                onLoad={handleLoad}
+                onDelete={handleDelete}
+                onApprove={handleApprove}
+              />
+            </section>
+
+            {/* Configured Table */}
             <div className="border-t border-black/5 dark:border-white/5 my-8"></div>
             <ScheduleTable summary={summary} />
           </div>

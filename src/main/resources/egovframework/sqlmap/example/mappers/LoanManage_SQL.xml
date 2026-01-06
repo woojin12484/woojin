@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.example.loan.LoanManageMapper">
+
+	<resultMap id="loanManageResult" type="egovframework.example.loan.LoanManageVO">
+		<result property="id" column="ID"/>
+		<result property="vehiclePrice" column="VEHICLE_PRICE"/>
+		<result property="downPayment" column="DOWN_PAYMENT"/>
+		<result property="engineDisplacement" column="ENGINE_DISPLACEMENT"/>
+		<result property="fuelType" column="FUEL_TYPE"/>
+		<result property="envChargeSemiAnnual" column="ENV_CHARGE"/>
+		<result property="loanAmount" column="LOAN_AMOUNT"/>
+		<result property="interestRate" column="INTEREST_RATE"/>
+		<result property="termMonths" column="TERM_MONTHS"/>
+		<result property="startDate" column="START_DATE"/>
+		<result property="regDate" column="REG_DATE"/>
+		<result property="status" column="STATUS"/>
+	</resultMap>
+
+	<insert id="insertLoanSchedule">
+		INSERT INTO LOAN_SCHEDULE (
+			ID, VEHICLE_PRICE, DOWN_PAYMENT, ENGINE_DISPLACEMENT, FUEL_TYPE, 
+			ENV_CHARGE, LOAN_AMOUNT, INTEREST_RATE, TERM_MONTHS, START_DATE, 
+			REG_DATE, STATUS
+		) VALUES (
+			#{id}, #{vehiclePrice}, #{downPayment}, #{engineDisplacement}, #{fuelType},
+			#{envChargeSemiAnnual}, #{loanAmount}, #{interestRate}, #{termMonths}, #{startDate},
+			SYSDATE, #{status}
+		)
+	</insert>
+
+	<update id="updateLoanSchedule">
+		UPDATE LOAN_SCHEDULE SET
+			VEHICLE_PRICE = #{vehiclePrice},
+			DOWN_PAYMENT = #{downPayment},
+			ENGINE_DISPLACEMENT = #{engineDisplacement},
+			FUEL_TYPE = #{fuelType},
+			ENV_CHARGE = #{envChargeSemiAnnual},
+			LOAN_AMOUNT = #{loanAmount},
+			INTEREST_RATE = #{interestRate},
+			TERM_MONTHS = #{termMonths},
+			START_DATE = #{startDate}
+		WHERE ID = #{id}
+	</update>
+
+	<delete id="deleteLoanSchedule">
+		DELETE FROM LOAN_SCHEDULE
+		WHERE ID = #{id}
+	</delete>
+
+	<select id="selectLoanScheduleList" resultMap="loanManageResult">
+		SELECT
+			ID, VEHICLE_PRICE, DOWN_PAYMENT, ENGINE_DISPLACEMENT, FUEL_TYPE, 
+			ENV_CHARGE, LOAN_AMOUNT, INTEREST_RATE, TERM_MONTHS, START_DATE, 
+			REG_DATE, STATUS
+		FROM LOAN_SCHEDULE
+		ORDER BY REG_DATE DESC
+	</select>
+    
+    <select id="selectLoanSchedule" resultMap="loanManageResult">
+		SELECT
+			ID, VEHICLE_PRICE, DOWN_PAYMENT, ENGINE_DISPLACEMENT, FUEL_TYPE, 
+			ENV_CHARGE, LOAN_AMOUNT, INTEREST_RATE, TERM_MONTHS, START_DATE, 
+			REG_DATE, STATUS
+		FROM LOAN_SCHEDULE
+		WHERE ID = #{id}
+	</select>
+
+	<update id="updateLoanStatus">
+		UPDATE LOAN_SCHEDULE SET
+			STATUS = #{status}
+		WHERE ID = #{id}
+	</update>
+
+</mapper>
