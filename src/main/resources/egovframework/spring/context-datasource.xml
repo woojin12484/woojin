@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+    <!-- PostgreSQL DataSource Configuration -->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="org.postgresql.Driver"/>
+        <property name="url" value="jdbc:postgresql://ep-quiet-meadow-ahnslgia-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require"/>
+        <property name="username" value="neondb_owner"/>
+        <property name="password" value="npg_wE6OJYFx4yoV"/>
+
+        <!-- Connection Pool Settings (Optional) -->
+        <property name="initialSize" value="5"/>
+        <property name="maxActive" value="10"/>
+        <property name="validationQuery" value="SELECT 1"/>
+        <property name="testWhileIdle" value="true"/>
+    </bean>
+
+</beans>

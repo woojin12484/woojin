@@ -25,6 +25,16 @@ public class LoanManageController {
     }
 
     /**
+     * 상세 조회
+     */
+    @RequestMapping(value = "/loan/view.do")
+    public String selectLoan(@RequestParam("id") String id, ModelMap model) throws Exception {
+        LoanManageVO result = loanManageService.selectLoanSchedule(id);
+        model.addAttribute("result", result);
+        return "loan/loanView";
+    }
+
+    /**
      * 저장 (등록/수정)
      */
     @RequestMapping(value = "/loan/save.do")

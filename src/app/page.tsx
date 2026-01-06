@@ -6,70 +6,74 @@ import { ScheduleTable } from "@/components/ScheduleTable";
 import { ScheduleList } from "@/components/ScheduleList";
 import { calculateEqualPrincipalAndInterest, LoanInput, LoanSummary } from "@/lib/calculators";
 import { LoanSchedule } from "@/lib/types";
+import { LoanSchedule } from "@/lib/types";
+import { getSchedules, saveSchedule, deleteSchedule, approveSchedule } from "@/lib/actions";
+import { FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const [summary, setSummary] = useState<LoanSummary | null>(null);
   const [schedules, setSchedules] = useState<LoanSchedule[]>([]);
   const [editingData, setEditingData] = useState<LoanInput | null>(null);
 
-  // Load from localStorage on mount
-  useEffect(() => {
-    const saved = localStorage.getItem('loanSchedules');
-    if (saved) {
-      try {
-        setSchedules(JSON.parse(saved));
-      } catch (e) {
-        console.error("Failed to parse schedules", e);
-      }
-    }
-  }, []);
+  const refreshList = async () => {
+    try {
+      // @ts-ignore - mismatch in Prisma types vs LoanSchedule interface locally defined (string vs FuelType)
+      const data = await getSchedules();
 
-  // Save to localStorage whenever schedules change
+      const mapped: LoanSchedule[] = data.map(item => ({
+        ...item,
+        fuelType: item.fuelType as any,
+        createdAt: item.createdAt.toISOString()
+      }));
+
+      setSchedules(mapped);
+    } catch (e) {
+      console.error("Failed to fetch schedules make sure DB is connected", e);
+    }
+  };
+
   useEffect(() => {
-    localStorage.setItem('loanSchedules', JSON.stringify(schedules));
-  }, [schedules]);
+    refreshList();
+  }, []);
 
   const handleCalculate = (data: LoanInput) => {
     const result = calculateEqualPrincipalAndInterest(data);
     setSummary(result);
   };
 
-  const handleSave = (data: LoanInput) => {
-    const result = calculateEqualPrincipalAndInterest(data);
-
-    // Check if we are updating an existing draft (simple logic: check if editingData matches an ID? 
-    // Actually, simplifying: Always create new unless we tracked ID. 
-    // To support update, we need to know if we are editing an ID.
-    // Let's assume 'Save' always creates NEW for now, unless we explicitly want 'Update'.
-    // Given the request, "Save" usually means "Create". "Edit" means load to form.
-    // If I edit and save, should it update? Probably.
-    // But LoanInput doesn't have ID. 
-    // Let's just create new entry for now to be safe, or check if we can match.
-    // For this demo, let's append.
-
-    const newSchedule: LoanSchedule = {
-      ...data,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-      status: 'DRAFT',
-      summary: result
-    };
-
-    setSchedules(prev => [newSchedule, ...prev]);
-    alert("상환 스케줄이 저장되었습니다.");
-  };
-
-  const handleDelete = (id: string) => {
-    if (confirm("정말 삭제하시겠습니까?")) {
-      setSchedules(prev => prev.filter(s => s.id !== id));
+  const handleSave = async (data: LoanInput) => {
+    try {
+      await saveSchedule(data);
+      refreshList();
+      alert("상환 스케줄이 저장되었습니다.");
+    } catch (e) {
+      console.error(e);
+      alert("저장 중 오류가 발생했습니다. DB 연결을 확인해주세요.");
     }
   };
 
-  const handleApprove = (id: string) => {
+  const handleDelete = async (id: string) => {
+    if (confirm("정말 삭제하시겠습니까?")) {
+      try {
+        await deleteSchedule(id);
+        refreshList();
+      } catch (e) {
+        console.error(e);
+        alert("삭제 실패");
+      }
+    }
+  };
+
+  const handleApprove = async (id: string) => {
     if (confirm("이 견적을 승인하시겠습니까?")) {
-      setSchedules(prev => prev.map(s =>
-        s.id === id ? { ...s, status: 'APPROVED' } : s
-      ));
+      try {
+        await approveSchedule(id);
+        refreshList();
+      } catch (e) {
+        console.error(e);
+        alert("승인 실패");
+      }
     }
   };
 
@@ -85,7 +89,14 @@ export default function Home() {
       termMonths: schedule.termMonths,
       startDate: new Date(schedule.startDate)
     });
-    setSummary(schedule.summary || null);
+
+    // Auto calculate for convenience:
+    const result = calculateEqualPrincipalAndInterest({
+      ...schedule,
+      startDate: new Date(schedule.startDate)
+    });
+    setSummary(result);
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -93,14 +104,24 @@ export default function Home() {
     <main className="min-h-screen bg-[#F0FDF8] dark:bg-[#022c22] selection:bg-teal-500/30">
       <div className="max-w-[1400px] mx-auto p-6 md:p-12 lg:p-20">
 
-        <header className="mb-16 md:mb-24 fade-in-up">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-slate-800 dark:text-emerald-50 mb-4">
-            woojin Capital
-          </h1>
-          <p className="text-xl md:text-2xl text-slate-500 dark:text-slate-400 font-normal tracking-tight max-w-2xl">
-            가장 합리적인 자동차 금융 계획을 세워보세요.<br />
-            투명한 견적과 스마트한 상환 스케줄을 제공합니다.
-          </p>
+        <header className="mb-16 md:mb-24 fade-in-up flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div>
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-slate-800 dark:text-emerald-50 mb-4">
+              woojin Capital
+            </h1>
+            <p className="text-xl md:text-2xl text-slate-500 dark:text-slate-400 font-normal tracking-tight max-w-2xl">
+              가장 합리적인 자동차 금융 계획을 세워보세요.<br />
+              투명한 견적과 스마트한 상환 스케줄을 제공합니다.
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            className="rounded-full border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-slate-600 dark:text-slate-300"
+            onClick={() => window.open('/smart_guide.pdf', '_blank')}
+          >
+            <FileText className="w-4 h-4 mr-2" />
+            소개자료 보기
+          </Button>
         </header>
 
         <div className="flex flex-col gap-12 w-full">
