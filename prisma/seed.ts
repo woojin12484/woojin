@@ -29,7 +29,7 @@ async function main() {
                             create: [
                                 {
                                     name: '그랜저 (Grandeur)',
-                                    imageUrl: 'https://www.hyundai.com/contents/repn-car/SIDE-45/grandeur-gn7-en-24my-45side-abp.png',
+                                    imageUrl: '/images/cars/grandeur.png',
                                     trims: {
                                         create: [
                                             { name: '2.5 가솔린 프리미엄', fuelType: 'gasoline', price: 37850000, engineDisplacement: 2497 },
@@ -47,7 +47,7 @@ async function main() {
                                 },
                                 {
                                     name: '쏘나타 (Sonata)',
-                                    imageUrl: 'https://www.hyundai.com/contents/repn-car/SIDE-45/sonata-dn8-24my-45side-r2p.png',
+                                    imageUrl: '/images/cars/sonata.png',
                                     trims: {
                                         create: [
                                             { name: '2.0 가솔린 프리미엄', fuelType: 'gasoline', price: 28000000, engineDisplacement: 1999 },
@@ -64,7 +64,7 @@ async function main() {
                             create: [
                                 {
                                     name: '싼타페 (Santa Fe)',
-                                    imageUrl: 'https://www.hyundai.com/contents/repn-car/SIDE-45/santafe-mx5-24my-45side-r2p.png',
+                                    imageUrl: '/images/cars/santafe.png',
                                     trims: {
                                         create: [
                                             { name: '2.5 터보 가솔린 프레스티지', fuelType: 'gasoline', price: 38000000, engineDisplacement: 2497 },
@@ -93,7 +93,7 @@ async function main() {
                             create: [
                                 {
                                     name: '쏘렌토 (Sorento)',
-                                    imageUrl: 'https://www.kia.com/content/dam/kwcms/kr/ko/images/vehicles/sorento/mq4_pe/2024/nav/sorento_mq4_pe_2024_nav_swp.png',
+                                    imageUrl: '/images/cars/sorento.png',
                                     trims: {
                                         create: [
                                             { name: '2.2 디젤 프레스티지', fuelType: 'diesel', price: 39000000, engineDisplacement: 2151 },
@@ -128,7 +128,7 @@ async function main() {
                             create: [
                                 {
                                     name: '5 Series',
-                                    imageUrl: 'https://www.bmw.co.kr/content/dam/bmw/common/all-models/5-series/sedan/2023/navigation/bmw-5-series-sedan-phev-modellfinder.png',
+                                    imageUrl: '/images/cars/bmw5.png',
                                     trims: {
                                         create: [
                                             { name: '520i M Sport', fuelType: 'gasoline', price: 68000000, engineDisplacement: 1998 },
