@@ -24,4 +24,60 @@ model LoanSchedule {
   
   status              String   @default("DRAFT") // DRAFT, APPROVED
   createdAt           DateTime @default(now())
+
+  // Selected Vehicle Info (Snapshot)
+  vehicleName         String?
+  trimName            String?
+  selectedOptions     Json?    // Array of selected option objects { name, price }
+}
+
+model VehicleOrigin {
+  id            Int             @id @default(autoincrement())
+  name          String          // "Domestic" (국산), "Import" (외산)
+  code          String          @unique // "DOMESTIC", "IMPORT"
+  manufacturers VehicleManufacturer[]
+}
+
+model VehicleManufacturer {
+  id       Int             @id @default(autoincrement())
+  name     String
+  originId Int
+  origin   VehicleOrigin   @relation(fields: [originId], references: [id])
+  types    VehicleType[]
+}
+
+model VehicleType {
+  id             Int                 @id @default(autoincrement())
+  name           String              // "Sedan", "SUV", "Truck"
+  manufacturerId Int
+  manufacturer   VehicleManufacturer @relation(fields: [manufacturerId], references: [id])
+  models         VehicleModel[]
+}
+
+model VehicleModel {
+  id       Int           @id @default(autoincrement())
+  name     String
+  imageUrl String?       // URL to vehicle image
+  typeId   Int
+  type     VehicleType   @relation(fields: [typeId], references: [id])
+  trims    VehicleTrim[]
+  options  VehicleOption[]
+}
+
+model VehicleTrim {
+  id                 Int     @id @default(autoincrement())
+  name               String
+  modelId            Int
+  model              VehicleModel @relation(fields: [modelId], references: [id])
+  fuelType           String  // "Gasoline", "Diesel", "Hybrid", "Electric", "Hydrogen"
+  price              Float
+  engineDisplacement Int
+}
+
+model VehicleOption {
+  id      Int          @id @default(autoincrement())
+  name    String
+  price   Float
+  modelId Int
+  model   VehicleModel @relation(fields: [modelId], references: [id])
 }

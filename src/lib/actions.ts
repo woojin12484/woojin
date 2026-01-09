@@ -33,6 +33,10 @@ export async function saveSchedule(data: LoanInput) {
             termMonths: data.termMonths,
             startDate: new Date(data.startDate),
             status: 'DRAFT',
+            // New fields
+            vehicleName: data.vehicleName,
+            trimName: data.trimName,
+            selectedOptions: data.selectedOptions || [],
         },
     });
     revalidatePath('/');

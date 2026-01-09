@@ -10,6 +10,11 @@ export interface LoanInput {
     interestRate: number; // Annual interest rate in percentage
     termMonths: number; // Loan term in months
     startDate: Date; // Start date of the loan
+
+    // Optional Vehicle Details
+    vehicleName?: string;
+    trimName?: string;
+    selectedOptions?: any[];
 }
 
 export interface AmortizationScheduleItem {

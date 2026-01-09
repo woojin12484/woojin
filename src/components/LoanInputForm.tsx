@@ -7,8 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { LoanInput, FuelType } from "@/lib/calculators";
 import { formatCurrency } from "@/lib/utils";
-import { Save } from "lucide-react";
+import { Save, Car } from "lucide-react";
 import { translations, Language } from "@/lib/translations";
+import { VehicleSelector, SelectedVehicleData } from "@/components/VehicleSelector";
 
 interface LoanInputFormProps {
     onCalculate: (data: LoanInput) => void;
@@ -29,6 +30,11 @@ export function LoanInputForm({ onCalculate, onSave, initialData, language }: Lo
     const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0]);
 
     const [loanAmount, setLoanAmount] = useState<number>(0);
+
+    // Vehicle Selection State
+    const [selectorOpen, setSelectorOpen] = useState(false);
+    const [selectedVehicleName, setSelectedVehicleName] = useState("");
+    const [selectedOptions, setSelectedOptions] = useState<any[]>([]);
 
     const t = translations[language];
 
@@ -72,8 +78,30 @@ export function LoanInputForm({ onCalculate, onSave, initialData, language }: Lo
             setRate(String(initialData.interestRate || 0));
             setMonths(String(initialData.termMonths || 36));
             setDate(initialData.startDate instanceof Date ? initialData.startDate.toISOString().split('T')[0] : new Date(initialData.startDate).toISOString().split('T')[0]);
+
+            if (initialData.vehicleName) {
+                setSelectedVehicleName(initialData.vehicleName);
+            }
         }
     }, [initialData]);
+
+    const handleVehicleSelect = (data: SelectedVehicleData) => {
+        setVehiclePrice(formatNumber(String(data.price)));
+        setDisplacement(formatNumber(String(data.displacement)));
+
+        // Map fuel type string to strict FuelType
+        // Seed data: "gasoline", "diesel", "hybrid", "electric"
+        // FuelType union: 'gasoline' | 'diesel' | 'hybrid' | 'electric' | 'hydrogen'
+        const fuel = data.fuelType.toLowerCase();
+        if (['gasoline', 'diesel', 'hybrid', 'electric', 'hydrogen'].includes(fuel)) {
+            setFuelType(fuel as FuelType);
+        } else {
+            setFuelType('gasoline'); // default fallback
+        }
+
+        setSelectedVehicleName(`${data.vehicleName} ${data.trimName}`);
+        setSelectedOptions(data.options);
+    };
 
     const getFormData = (): LoanInput => {
         return {
@@ -86,6 +114,8 @@ export function LoanInputForm({ onCalculate, onSave, initialData, language }: Lo
             interestRate: Number(rate),
             termMonths: Number(months),
             startDate: new Date(date),
+            vehicleName: selectedVehicleName,
+            selectedOptions: selectedOptions
         };
     };
 
@@ -109,11 +139,39 @@ export function LoanInputForm({ onCalculate, onSave, initialData, language }: Lo
                 <p className="text-slate-500 text-[15px]">{t.formDesc}</p>
             </CardHeader>
             <form onSubmit={handleSubmit}>
+                <VehicleSelector
+                    open={selectorOpen}
+                    onOpenChange={setSelectorOpen}
+                    onSelect={handleVehicleSelect}
+                />
+
                 <CardContent className="space-y-8 p-8">
+
+                    {/* Selected Vehicle Display */}
+                    {selectedVehicleName && (
+                        <div className="bg-teal-50 dark:bg-teal-900/20 p-4 rounded-xl border border-teal-100 dark:border-teal-800 flex justify-between items-center animate-in fade-in slide-in-from-top-2">
+                            <div>
+                                <div className="text-xs font-semibold text-teal-600 uppercase tracking-wider mb-1">Selected Vehicle</div>
+                                <div className="font-bold text-lg text-teal-900 dark:text-teal-100">{selectedVehicleName}</div>
+                                <div className="text-sm text-slate-500">
+                                    {selectedOptions.length > 0 && `Included Options: ${selectedOptions.map(o => o.name).join(', ')}`}
+                                </div>
+                            </div>
+                            <Button type="button" variant="outline" size="sm" onClick={() => setSelectorOpen(true)}>
+                                Change
+                            </Button>
+                        </div>
+                    )}
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="space-y-2 group">
-                            <Label htmlFor="vehiclePrice" className="text-slate-500 dark:text-slate-400 font-medium ml-1 transition-colors group-focus-within:text-teal-600">{t.vehiclePrice}</Label>
+                            <div className="flex justify-between items-center">
+                                <Label htmlFor="vehiclePrice" className="text-slate-500 dark:text-slate-400 font-medium ml-1 transition-colors group-focus-within:text-teal-600">{t.vehiclePrice}</Label>
+                                <button type="button" onClick={() => setSelectorOpen(true)} className="text-xs text-teal-600 font-semibold hover:text-teal-700 flex items-center">
+                                    <Car className="w-3 h-3 mr-1" />
+                                    차량 선택 마법사
+                                </button>
+                            </div>
                             <div className="relative transition-all duration-300 transform group-focus-within:scale-[1.01]">
                                 <Input
                                     id="vehiclePrice"
