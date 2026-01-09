@@ -8,14 +8,16 @@ import { Button } from "@/components/ui/button";
 import { LoanInput, FuelType } from "@/lib/calculators";
 import { formatCurrency } from "@/lib/utils";
 import { Save } from "lucide-react";
+import { translations, Language } from "@/lib/translations";
 
 interface LoanInputFormProps {
     onCalculate: (data: LoanInput) => void;
     onSave?: (data: LoanInput) => void;
     initialData?: LoanInput | null;
+    language: Language;
 }
 
-export function LoanInputForm({ onCalculate, onSave, initialData }: LoanInputFormProps) {
+export function LoanInputForm({ onCalculate, onSave, initialData, language }: LoanInputFormProps) {
     const [vehiclePrice, setVehiclePrice] = useState<string>("");
     const [downPayment, setDownPayment] = useState<string>("");
     const [displacement, setDisplacement] = useState<string>(""); // cc
@@ -27,6 +29,8 @@ export function LoanInputForm({ onCalculate, onSave, initialData }: LoanInputFor
     const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0]);
 
     const [loanAmount, setLoanAmount] = useState<number>(0);
+
+    const t = translations[language];
 
     // Helper to format number with commas
     const formatNumber = (value: string) => {
@@ -100,16 +104,16 @@ export function LoanInputForm({ onCalculate, onSave, initialData }: LoanInputFor
         <Card className="w-full border-t-0 shadow-2xl shadow-black/5 dark:shadow-white/5">
             <CardHeader className="pb-8">
                 <CardTitle className="text-2xl font-bold tracking-tight text-teal-700 dark:text-teal-400">
-                    우진캐피탈
+                    {t.formTitle}
                 </CardTitle>
-                <p className="text-slate-500 text-[15px]">대출 조건을 입력하여 상환 스케줄을 확인하세요.</p>
+                <p className="text-slate-500 text-[15px]">{t.formDesc}</p>
             </CardHeader>
             <form onSubmit={handleSubmit}>
                 <CardContent className="space-y-8 p-8">
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="space-y-2 group">
-                            <Label htmlFor="vehiclePrice" className="text-slate-500 dark:text-slate-400 font-medium ml-1 transition-colors group-focus-within:text-teal-600">차량 가격</Label>
+                            <Label htmlFor="vehiclePrice" className="text-slate-500 dark:text-slate-400 font-medium ml-1 transition-colors group-focus-within:text-teal-600">{t.vehiclePrice}</Label>
                             <div className="relative transition-all duration-300 transform group-focus-within:scale-[1.01]">
                                 <Input
                                     id="vehiclePrice"
@@ -125,7 +129,7 @@ export function LoanInputForm({ onCalculate, onSave, initialData }: LoanInputFor
                         </div>
 
                         <div className="space-y-2 group">
-                            <Label htmlFor="downPayment" className="text-slate-500 dark:text-slate-400 font-medium ml-1 transition-colors group-focus-within:text-teal-600">선수금</Label>
+                            <Label htmlFor="downPayment" className="text-slate-500 dark:text-slate-400 font-medium ml-1 transition-colors group-focus-within:text-teal-600">{t.downPayment}</Label>
                             <div className="relative transition-all duration-300 transform group-focus-within:scale-[1.01]">
                                 <Input
                                     id="downPayment"
@@ -140,7 +144,7 @@ export function LoanInputForm({ onCalculate, onSave, initialData }: LoanInputFor
                         </div>
 
                         <div className="space-y-2 group">
-                            <Label htmlFor="displacement" className="text-slate-500 dark:text-slate-400 font-medium ml-1 transition-colors group-focus-within:text-teal-600">배기량</Label>
+                            <Label htmlFor="displacement" className="text-slate-500 dark:text-slate-400 font-medium ml-1 transition-colors group-focus-within:text-teal-600">{t.displacement}</Label>
                             <div className="relative transition-all duration-300 transform group-focus-within:scale-[1.01]">
                                 <Input
                                     id="displacement"
@@ -156,7 +160,7 @@ export function LoanInputForm({ onCalculate, onSave, initialData }: LoanInputFor
                     </div>
 
                     <div className="py-5 px-6 bg-teal-50/50 dark:bg-teal-900/10 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 border border-teal-100/50 dark:border-teal-500/10">
-                        <span className="text-teal-700/80 dark:text-teal-300/80 text-sm font-medium">예상 대출 원금 (차량가 - 선수금)</span>
+                        <span className="text-teal-700/80 dark:text-teal-300/80 text-sm font-medium">{t.loanPrincipal}</span>
                         <span className="text-3xl font-bold text-teal-700 dark:text-teal-400 tracking-tight">
                             {formatCurrency(loanAmount)}
                         </span>
@@ -164,28 +168,28 @@ export function LoanInputForm({ onCalculate, onSave, initialData }: LoanInputFor
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                         <div className="space-y-3">
-                            <Label className="text-slate-500 dark:text-slate-400 font-medium ml-1">연료 종류</Label>
+                            <Label className="text-slate-500 dark:text-slate-400 font-medium ml-1">{t.fuelType}</Label>
                             <div className="grid grid-cols-2 gap-2 p-1.5 bg-slate-100 dark:bg-slate-800/80 rounded-2xl">
                                 <button
                                     type="button"
                                     onClick={() => setFuelType('gasoline')}
                                     className={`py-2.5 text-sm font-medium rounded-xl transition-all duration-300 ${fuelType !== 'diesel' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 scale-[1.02]' : 'text-slate-500 hover:text-slate-800 hover:bg-black/5'}`}
                                 >
-                                    일반
+                                    {t.fuelGasoline}
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setFuelType('diesel')}
                                     className={`py-2.5 text-sm font-medium rounded-xl transition-all duration-300 ${fuelType === 'diesel' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 scale-[1.02]' : 'text-slate-500 hover:text-slate-800 hover:bg-black/5'}`}
                                 >
-                                    디젤 (경유)
+                                    {t.fuelDiesel}
                                 </button>
                             </div>
                         </div>
 
                         {fuelType === 'diesel' && (
                             <div className="space-y-3 animate-in slide-in-from-top-2 fade-in duration-300 overflow-hidden group">
-                                <Label htmlFor="envCharge" className="text-amber-600 dark:text-amber-500 ml-1 font-medium">환경개선부담금 (반기)</Label>
+                                <Label htmlFor="envCharge" className="text-amber-600 dark:text-amber-500 ml-1 font-medium">{t.envCharge}</Label>
                                 <div className="relative transition-all duration-300 transform group-focus-within:scale-[1.01]">
                                     <Input
                                         id="envCharge"
@@ -203,7 +207,7 @@ export function LoanInputForm({ onCalculate, onSave, initialData }: LoanInputFor
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="space-y-2 group">
-                            <Label htmlFor="rate" className="text-stone-500 dark:text-stone-400 font-medium ml-1 transition-colors group-focus-within:text-orange-500">연 이자율</Label>
+                            <Label htmlFor="rate" className="text-stone-500 dark:text-stone-400 font-medium ml-1 transition-colors group-focus-within:text-orange-500">{t.interestRate}</Label>
                             <div className="relative transition-all duration-300 transform group-focus-within:scale-[1.01]">
                                 <Input
                                     id="rate"
@@ -220,7 +224,7 @@ export function LoanInputForm({ onCalculate, onSave, initialData }: LoanInputFor
                         </div>
 
                         <div className="space-y-2 group">
-                            <Label htmlFor="months" className="text-stone-500 dark:text-stone-400 font-medium ml-1 transition-colors group-focus-within:text-orange-500">대출 기간</Label>
+                            <Label htmlFor="months" className="text-stone-500 dark:text-stone-400 font-medium ml-1 transition-colors group-focus-within:text-orange-500">{t.loanTerm}</Label>
                             <div className="relative transition-all duration-300 transform group-focus-within:scale-[1.01]">
                                 <Input
                                     id="months"
@@ -236,7 +240,7 @@ export function LoanInputForm({ onCalculate, onSave, initialData }: LoanInputFor
                         </div>
 
                         <div className="space-y-2 group">
-                            <Label htmlFor="date" className="text-stone-500 dark:text-stone-400 font-medium ml-1 transition-colors group-focus-within:text-orange-500">대출 실행일</Label>
+                            <Label htmlFor="date" className="text-stone-500 dark:text-stone-400 font-medium ml-1 transition-colors group-focus-within:text-orange-500">{t.startDate}</Label>
                             <div className="relative transition-all duration-300 transform group-focus-within:scale-[1.01]">
                                 <Input
                                     id="date"
@@ -254,7 +258,7 @@ export function LoanInputForm({ onCalculate, onSave, initialData }: LoanInputFor
                 <CardFooter className="pt-0 pb-8 px-8">
                     <div className="flex gap-4">
                         <Button type="submit" size="lg" className="flex-1 h-14 text-lg font-semibold shadow-orange-500/20 shadow-xl hover:shadow-orange-500/30 rounded-2xl bg-orange-600 hover:bg-orange-700 text-white">
-                            상환 스케줄 계산하기
+                            {t.calcBtn}
                         </Button>
                         <Button
                             type="button"
@@ -264,7 +268,7 @@ export function LoanInputForm({ onCalculate, onSave, initialData }: LoanInputFor
                             onClick={handleSave}
                         >
                             <Save className="w-5 h-5 mr-2" />
-                            저장
+                            {t.saveBtn}
                         </Button>
                     </div>
                 </CardFooter>

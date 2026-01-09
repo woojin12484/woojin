@@ -1,19 +1,23 @@
 import { LoanSummary, AmortizationScheduleItem } from "@/lib/calculators";
 import { formatCurrency, cn } from "@/lib/utils";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { translations, Language } from "@/lib/translations";
 
 interface ScheduleTableProps {
     summary: LoanSummary | null;
+    language: Language;
 }
 
-export function ScheduleTable({ summary }: ScheduleTableProps) {
+export function ScheduleTable({ summary, language }: ScheduleTableProps) {
+    const t = translations[language];
+
     if (!summary || summary.schedule.length === 0) {
         return (
             <div className="h-full flex flex-col items-center justify-center p-10 text-center space-y-4 opacity-50">
                 <div className="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                     <svg className="w-8 h-8 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                 </div>
-                <p className="text-muted-foreground font-medium">조건을 입력하여 결과를 확인하세요</p>
+                <p className="text-muted-foreground font-medium">{t.emptyState}</p>
             </div>
         );
     }
@@ -28,7 +32,7 @@ export function ScheduleTable({ summary }: ScheduleTableProps) {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <Card className="bg-white/50 border-0 shadow-sm">
                     <CardHeader className="pb-2 p-5">
-                        <CardTitle className="text-[13px] font-medium text-slate-500 uppercase tracking-wider">차량 가격</CardTitle>
+                        <CardTitle className="text-[13px] font-medium text-slate-500 uppercase tracking-wider">{t.summaryPrice}</CardTitle>
                         <div className="text-xl font-semibold text-foreground mt-1">
                             {formatCurrency(vehiclePrice || 0)}
                         </div>
@@ -36,7 +40,7 @@ export function ScheduleTable({ summary }: ScheduleTableProps) {
                 </Card>
                 <Card className="bg-white/50 border-0 shadow-sm">
                     <CardContent className="pb-2 p-5">
-                        <CardTitle className="text-[13px] font-medium text-slate-500 uppercase tracking-wider">총 이자</CardTitle>
+                        <CardTitle className="text-[13px] font-medium text-slate-500 uppercase tracking-wider">{t.summaryInterest}</CardTitle>
                         <div className="text-xl font-semibold text-teal-600 mt-1">
                             {formatCurrency(totalInterest)}
                         </div>
@@ -45,13 +49,13 @@ export function ScheduleTable({ summary }: ScheduleTableProps) {
 
                 <Card className="bg-white/50 border-0 shadow-sm">
                     <CardHeader className="pb-2 p-5">
-                        <CardTitle className="text-[13px] font-medium text-slate-500 uppercase tracking-wider">연간 자동차세</CardTitle>
+                        <CardTitle className="text-[13px] font-medium text-slate-500 uppercase tracking-wider">{t.summaryTax}</CardTitle>
                         <div className="text-xl font-semibold text-emerald-600 mt-1">
                             {autoTax ? formatCurrency(autoTax.annual) : "-"}
                         </div>
                         {autoTax && (
                             <p className="text-xs text-slate-400 mt-1">
-                                월 {formatCurrency(autoTax.monthly)}
+                                {t.summaryTaxMonthly} {formatCurrency(autoTax.monthly)}
                             </p>
                         )}
                     </CardHeader>
@@ -60,19 +64,19 @@ export function ScheduleTable({ summary }: ScheduleTableProps) {
                 {envCharge ? (
                     <Card className="bg-white/50 border-0 shadow-sm">
                         <CardHeader className="pb-2 p-5">
-                            <CardTitle className="text-[13px] font-medium text-slate-500 uppercase tracking-wider">환경부담금(반기)</CardTitle>
+                            <CardTitle className="text-[13px] font-medium text-slate-500 uppercase tracking-wider">{t.summaryEnv}</CardTitle>
                             <div className="text-xl font-semibold text-emerald-600 mt-1">
                                 {formatCurrency(envCharge.semiAnnual)}
                             </div>
                             <p className="text-xs text-slate-400 mt-1">
-                                월 {formatCurrency(envCharge.monthly)}
+                                {t.summaryTaxMonthly} {formatCurrency(envCharge.monthly)}
                             </p>
                         </CardHeader>
                     </Card>
                 ) : (
                     <Card className="bg-white/50 border-0 shadow-sm">
                         <CardContent className="pb-2 p-5">
-                            <CardTitle className="text-[13px] font-medium text-slate-500 uppercase tracking-wider">총 상환 금액</CardTitle>
+                            <CardTitle className="text-[13px] font-medium text-slate-500 uppercase tracking-wider">{t.summaryTotal}</CardTitle>
                             <div className="text-xl font-semibold text-teal-600 mt-1">
                                 {formatCurrency(totalPayment)}
                             </div>
@@ -88,15 +92,15 @@ export function ScheduleTable({ summary }: ScheduleTableProps) {
                         <table className="w-full text-[15px] border-collapse">
                             <thead className="bg-slate-50/90 dark:bg-slate-900/90 border-b border-black/5 dark:border-white/5 sticky top-0 z-10 backdrop-blur-md">
                                 <tr className="text-left text-slate-500 font-medium">
-                                    <th className="p-5 font-normal whitespace-nowrap">회차</th>
-                                    <th className="p-5 font-normal whitespace-nowrap">납입일</th>
-                                    <th className="p-5 text-right font-normal whitespace-nowrap">월 납입금</th>
-                                    <th className="p-5 text-right font-normal whitespace-nowrap">원금</th>
-                                    <th className="p-5 text-right font-normal whitespace-nowrap">이자</th>
-                                    {autoTax && <th className="p-5 text-right font-normal text-emerald-600/70 whitespace-nowrap">월 자동차세</th>}
-                                    {envCharge && <th className="p-5 text-right font-normal text-emerald-600/70 whitespace-nowrap">월 부담금</th>}
-                                    <th className="p-5 text-right font-semibold text-teal-600 whitespace-nowrap bg-teal-50/30 dark:bg-teal-900/10">월 총 지출</th>
-                                    <th className="p-5 text-right font-normal text-slate-400 whitespace-nowrap">잔액</th>
+                                    <th className="p-5 font-normal whitespace-nowrap">{t.tableHeader.round}</th>
+                                    <th className="p-5 font-normal whitespace-nowrap">{t.tableHeader.date}</th>
+                                    <th className="p-5 text-right font-normal whitespace-nowrap">{t.tableHeader.payment}</th>
+                                    <th className="p-5 text-right font-normal whitespace-nowrap">{t.tableHeader.principal}</th>
+                                    <th className="p-5 text-right font-normal whitespace-nowrap">{t.tableHeader.interest}</th>
+                                    {autoTax && <th className="p-5 text-right font-normal text-emerald-600/70 whitespace-nowrap">{t.tableHeader.tax}</th>}
+                                    {envCharge && <th className="p-5 text-right font-normal text-emerald-600/70 whitespace-nowrap">{t.tableHeader.env}</th>}
+                                    <th className="p-5 text-right font-semibold text-teal-600 whitespace-nowrap bg-teal-50/30 dark:bg-teal-900/10">{t.tableHeader.total}</th>
+                                    <th className="p-5 text-right font-normal text-slate-400 whitespace-nowrap">{t.tableHeader.balance}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-black/5 dark:divide-white/5">

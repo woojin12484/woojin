@@ -5,20 +5,24 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/utils";
 import { Trash2, Edit, CheckCircle } from "lucide-react";
+import { translations, Language } from "@/lib/translations";
 
 interface ScheduleListProps {
     schedules: LoanSchedule[];
     onLoad: (schedule: LoanSchedule) => void;
     onDelete: (id: string) => void;
     onApprove: (id: string) => void;
+    language: Language;
 }
 
-export function ScheduleList({ schedules, onLoad, onDelete, onApprove }: ScheduleListProps) {
+export function ScheduleList({ schedules, onLoad, onDelete, onApprove, language }: ScheduleListProps) {
+    const t = translations[language];
+
     if (schedules.length === 0) {
         return (
             <Card className="w-full border-dashed border-2 bg-slate-50/50 dark:bg-slate-900/20">
                 <CardContent className="py-12 text-center text-slate-500">
-                    저장된 상환 스케줄이 없습니다.
+                    {t.listEmpty}
                 </CardContent>
             </Card>
         );
@@ -28,7 +32,7 @@ export function ScheduleList({ schedules, onLoad, onDelete, onApprove }: Schedul
         <Card className="w-full shadow-lg">
             <CardHeader>
                 <CardTitle className="text-xl font-bold text-slate-800 dark:text-slate-100">
-                    저장된 견적 목록
+                    {t.listTitle}
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -43,7 +47,7 @@ export function ScheduleList({ schedules, onLoad, onDelete, onApprove }: Schedul
                                     {formatCurrency(schedule.vehiclePrice || 0)}원
                                 </span>
                                 <Badge variant={schedule.status === 'APPROVED' ? 'default' : 'secondary'} className={schedule.status === 'APPROVED' ? 'bg-emerald-500 hover:bg-emerald-600' : ''}>
-                                    {schedule.status === 'APPROVED' ? '승인완료' : '작성중'}
+                                    {schedule.status === 'APPROVED' ? t.statusApproved : t.statusDraft}
                                 </Badge>
                                 <span className="text-xs text-slate-400">
                                     {new Date(schedule.createdAt).toLocaleDateString()}
@@ -63,7 +67,7 @@ export function ScheduleList({ schedules, onLoad, onDelete, onApprove }: Schedul
                                 disabled={schedule.status === 'APPROVED'}
                             >
                                 <Edit className="w-4 h-4 mr-1.5" />
-                                수정
+                                {t.btnEdit}
                             </Button>
                             <Button
                                 variant="default"
@@ -73,7 +77,7 @@ export function ScheduleList({ schedules, onLoad, onDelete, onApprove }: Schedul
                                 disabled={schedule.status === 'APPROVED'}
                             >
                                 <CheckCircle className="w-4 h-4 mr-1.5" />
-                                결재
+                                {t.btnApprove}
                             </Button>
                             <Button
                                 variant="destructive"
@@ -82,7 +86,7 @@ export function ScheduleList({ schedules, onLoad, onDelete, onApprove }: Schedul
                                 className="flex-1 md:flex-none"
                             >
                                 <Trash2 className="w-4 h-4 mr-1.5" />
-                                삭제
+                                {t.btnDelete}
                             </Button>
                         </div>
                     </div>

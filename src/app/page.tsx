@@ -9,11 +9,19 @@ import { LoanSchedule } from "@/lib/types";
 import { getSchedules, saveSchedule, deleteSchedule, approveSchedule, getSchedule } from "@/lib/actions";
 import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { translations, Language } from "@/lib/translations";
 
 export default function Home() {
   const [summary, setSummary] = useState<LoanSummary | null>(null);
   const [schedules, setSchedules] = useState<LoanSchedule[]>([]);
   const [editingData, setEditingData] = useState<LoanInput | null>(null);
+  const [language, setLanguage] = useState<Language>('ko');
+
+  const t = translations[language];
+
+  const toggleLanguage = () => {
+    setLanguage(prev => prev === 'ko' ? 'en' : 'ko');
+  };
 
   const refreshList = async () => {
     try {
@@ -106,21 +114,31 @@ export default function Home() {
         <header className="mb-16 md:mb-24 fade-in-up flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
             <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-slate-800 dark:text-emerald-50 mb-4">
-              woojin Capital
+              {t.appTitle}
             </h1>
             <p className="text-xl md:text-2xl text-slate-500 dark:text-slate-400 font-normal tracking-tight max-w-2xl">
-              가장 합리적인 자동차 금융 계획을 세워보세요.<br />
-              투명한 견적과 스마트한 상환 스케줄을 제공합니다.
+              {t.appDesc1}<br />
+              {t.appDesc2}
             </p>
           </div>
-          <Button
-            variant="outline"
-            className="rounded-full border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-slate-600 dark:text-slate-300"
-            onClick={() => window.open('/smart_guide.pdf', '_blank')}
-          >
-            <FileText className="w-4 h-4 mr-2" />
-            소개자료 보기
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              className="rounded-full border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-slate-600 dark:text-slate-300"
+              onClick={() => window.open('/smart_guide.pdf', '_blank')}
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              {t.introBtn}
+            </Button>
+            <Button
+              variant="outline"
+              className="rounded-full border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-slate-600 dark:text-slate-300"
+              onClick={toggleLanguage}
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              {t.langBtn}
+            </Button>
+          </div>
         </header>
 
         <div className="flex flex-col gap-12 w-full">
@@ -129,13 +147,14 @@ export default function Home() {
               onCalculate={handleCalculate}
               onSave={handleSave}
               initialData={editingData}
+              language={language}
             />
 
             <div className="text-center">
               <p className="text-xs text-slate-400 leading-relaxed">
-                * 본 시뮬레이션 결과는 고객님의 입력을 바탕으로 한 단순 참고용입니다.<br />
-                * 실제 대출 실행 시점의 금리 및 금융사 정책에 따라 비용은 달라질 수 있습니다.<br />
-                * 원리금균등분할상환 방식을 기준으로 계산됩니다.
+                {t.disclaimer1}<br />
+                {t.disclaimer2}<br />
+                {t.disclaimer3}
               </p>
             </div>
           </div>
@@ -149,12 +168,13 @@ export default function Home() {
                 onLoad={handleLoad}
                 onDelete={handleDelete}
                 onApprove={handleApprove}
+                language={language}
               />
             </section>
 
             {/* Configured Table */}
             <div className="border-t border-black/5 dark:border-white/5 my-8"></div>
-            <ScheduleTable summary={summary} />
+            <ScheduleTable summary={summary} language={language} />
           </div>
         </div>
       </div>
